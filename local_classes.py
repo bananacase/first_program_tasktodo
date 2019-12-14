@@ -24,20 +24,7 @@ class Day:
     4. Saving the data strusture of the weaving object to the directory
     """
 
-    days_per_month = {
-        1: 31,
-        2: 28,
-        3: 31,
-        4: 30,
-        5: 31,
-        6: 30,
-        7: 31,
-        8: 31,
-        9: 30,
-        10: 31,
-        11: 30,
-        12: 31
-    }
+    days_per_month = [0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 
     def __init__(self, date: str, source='') -> None:
         '''
@@ -51,7 +38,7 @@ class Day:
         self.date = date.split('-')
 
         for i in self.date[:-1]:
-            source += (i+'/')
+            source += (i + '/')
             try:
                 os.mkdir(source)
             except FileExistsError:
@@ -65,7 +52,7 @@ class Day:
         This block named: 'Today'
         The parameter 'text': str
         '''
-        self.today_do[list(self.today_do.keys())[-1]+1] = [text, False]
+        self.today_do[list(self.today_do.keys())[-1] + 1] = [text, False]
 
     def input_tomorrow_do(self, text: str) -> None:
         '''
@@ -73,7 +60,7 @@ class Day:
         This block named: 'Tomorrow'
         The parameter 'text': str
         '''
-        self.tomorrow_do[list(self.tomorrow_do.keys())[-1]+1] = [text, False]
+        self.tomorrow_do[list(self.tomorrow_do.keys())[-1] + 1] = [text, False]
 
     def podsos(self) -> None:
         '''
@@ -107,6 +94,8 @@ class Day:
             if i != 0:
                 self.input_today_do(value[0])
 
+        del old_source
+
     def changest(self, id: int) -> None:
         '''
         This method changes the status ot the Task
@@ -119,6 +108,3 @@ class Day:
         '''
         with open(self.path, 'wb') as f:
             pickle.dump(self, f)
-    
-    def __int__(self):
-        return 0
