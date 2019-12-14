@@ -46,6 +46,17 @@ class Day:
         source += self.date[-1]
         self.path = source
 
+    @staticmethod
+    def from_dump(dump_path: str):
+        """
+        This function gives to you ability to load existing Day dump from disk
+        Function will read binary pickle dump and return Day class object
+
+        dump_path: str: full or absolute path to pickle dump of Day object
+        """
+        with open(dump_path, 'rb') as f:
+            return pickle.load(f)
+
     def input_today_do(self, text: str) -> None:
         '''
         This method creating to the new one Task in this block with parameter 'text'
@@ -108,3 +119,30 @@ class Day:
         '''
         with open(self.path, 'wb') as f:
             pickle.dump(self, f)
+
+    def __str__(self) -> str:
+        """
+        String representation of exemplar:
+
+        YYY-MM-DD
+        Today Tasks:
+            ...
+        Tomorrow Tasks:
+            ...
+        Todays insite:
+            ...
+        """
+        date = '-'.join(self.date)
+        todays = [task[0] for task in self.today_do.values()]
+        tomorrows = [task[0] for task in self.tomorrow_do.values()]
+        insite = self.insite_day
+
+        data = f"{date}\nDay Tasks:"
+        for t in todays:
+            data += f"\n\t{t}"
+        data += "\nTomorrow Tasks:"
+        for t in tomorrows:
+            data += f"\n\t{t}"
+        data += f"\nTodays insite:\n{insite}"
+
+        return data
