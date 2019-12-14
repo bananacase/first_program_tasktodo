@@ -119,3 +119,6 @@ class Day:
         '''
         with open(self.path, 'wb') as f:
             pickle.dump(self, f)
+    
+    def __int__(self):
+        return 0
