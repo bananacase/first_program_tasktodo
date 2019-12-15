@@ -95,11 +95,10 @@ class Day:
 
         old_source = self.source + f'{str(year_old)}/{str(month_old)}/{str(day_old)}'
 
-        try:
-            with open(old_source, 'rb') as f:
-                data_old = pickle.load(f)
-        except FileNotFoundError:
-            pass
+        print(f"try {old_source}")
+
+        with open(old_source, 'rb') as f:
+            data_old = pickle.load(f)
 
         for i, value in data_old.tomorrow_do.items():
             if i != 0:
