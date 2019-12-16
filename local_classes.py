@@ -9,8 +9,6 @@ Classes:
 import pickle
 import os
 
-a = os.sep
-
 
 class Day:
     """
