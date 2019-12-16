@@ -1,13 +1,14 @@
 #!/usr/bin/python
 
-'''
+"""
 There are several classes built for Task Managers project.
 These classes could be used as backend data collectors in further applications.
 Classes:
     Day: interactive data structure, that stores tasks for any day.
-'''
+"""
 import pickle
 import os
+import warnings
 
 
 class Day:
@@ -37,7 +38,7 @@ class Day:
             Source -- root folder of current Day class (str) (got from args!)
 
         date: str 'YYYY-MM-DD' (as same as GNU format)
-        <optional> source: str: root folder for days. Must match '^/.*/$'
+        <optional> source='': str: root folder for days. Must match '^/.*/$'
         '''
         self.source = source
         self.today_do = {0: ['Survive', True]}
@@ -50,9 +51,11 @@ class Day:
             try:
                 os.mkdir(source)
             except FileExistsError:
-                pass
+                continue
         source += self.date[-1]
         self.path = source
+
+        self._check_exist(err=True)  # Maybe it worth to set False..?
 
     @staticmethod
     def from_dump(dump_path: str):
@@ -131,11 +134,25 @@ class Day:
         '''
         This method saves the data strusture of the weaving object to the hard drive
         '''
+        self._check_exist()
+
         with open(self.path, 'wb') as f:
             pickle.dump(self, f)
 
+    def _check_exist(self, err=False) -> None:
+        '''
+        Private method that checks if self.path file already exists
+
+        <optional> err=False: bool: will raise error if True or Warn if False.
+        '''
+        if os.path.exists(self.path):
+            if err:
+                raise FileExistsError(f"File {self.path} already exists!")
+            else:
+                warnings.warn(f"File {self.path} already exists!", Warning)
+
     def __str__(self) -> str:
-        """
+        '''
         String representation of exemplar:
 
         YYY-MM-DD
@@ -147,7 +164,7 @@ class Day:
             ...
 
         return: str
-        """
+        '''
         date = '-'.join(self.date)
         todays = [task[0] for task in self.today_do.values()]
         tomorrows = [task[0] for task in self.tomorrow_do.values()]
