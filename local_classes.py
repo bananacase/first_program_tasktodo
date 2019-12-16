@@ -26,8 +26,18 @@ class Day:
 
     def __init__(self, date: str, source='') -> None:
         '''
+        Here we init new Day. Every Day consists of
+            Tasks to do during the current Day (dict)
+                id: ['Description', (Achieved? bool True/False)]
+            Tasks for tomorrow day -- plans (dict)
+                id: ['Description', (Achieved? bool True/False)]
+            Todays Insite (str)
+            Date -- GNU Formated date oy current Day (list)
+                ['YYY','MM','DD']
+            Source -- root folder of current Day class (str) (got from args!)
+
         date: str 'YYYY-MM-DD' (as same as GNU format)
-        source: str matches '^/.*/$'
+        <optional> source: str: root folder for days. Must match '^/.*/$'
         '''
         self.source = source
         self.today_do = {0: ['Survive', True]}
@@ -51,6 +61,8 @@ class Day:
         Function will read binary pickle dump and return Day class object
 
         dump_path: str: full or absolute path to pickle dump of Day object
+
+        return: Day object
         """
         with open(dump_path, 'rb') as f:
             return pickle.load(f)
@@ -59,21 +71,24 @@ class Day:
         '''
         This method creating to the new one Task in this block with parameter 'text'
         This block named: 'Today'
-        The parameter 'text': str
+
+        text: str: task description
         '''
         self.today_do[list(self.today_do.keys())[-1] + 1] = [text, False]
 
     def input_tomorrow_do(self, text: str) -> None:
         '''
-        This method creating to the new one Task in this block with parameter 'text'
+        This method creates the new Task in this block with parameter 'text'
         This block named: 'Tomorrow'
-        The parameter 'text': str
+
+        text: str: task description
         '''
         self.tomorrow_do[list(self.tomorrow_do.keys())[-1] + 1] = [text, False]
 
     def podsos(self) -> None:
         '''
-        podsos - it is the best method which changed ours life. It is perfect, truly. Seriously:
+        podsos - it is the best method which changed our life.
+        It is perfect, truly. Seriously:
         This method integrates data from one previous object into the current
         '''
         year_old = int(self.date[0])
@@ -106,7 +121,9 @@ class Day:
 
     def changest(self, id: int) -> None:
         '''
-        This method changes the status ot the Task
+        This method changes the status of the Task
+
+        id: int: id of task to change 'accepted' value (True <-> False)
         '''
         self.today_do[id][1] = not self.today_do[id][1]
 
@@ -128,6 +145,8 @@ class Day:
             ...
         Todays insite:
             ...
+
+        return: str
         """
         date = '-'.join(self.date)
         todays = [task[0] for task in self.today_do.values()]
