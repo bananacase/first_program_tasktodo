@@ -98,7 +98,7 @@ class Day:
         month_old = int(self.date[1])
         day_old = int(self.date[2])
 
-        if day_old == 1:
+        if day_old == 1: 
             if month_old == 1:
                 year_old -= 1
                 month_old = 12
@@ -106,6 +106,9 @@ class Day:
             else:
                 month_old -= 1
                 day_old = Day.days_per_month[month_old]
+                if month_old == 2 and year_old%4 == 0:
+                    # Febraury, 1 day longer month
+                    day_old += 1    
         else:
             day_old -= 1
 
