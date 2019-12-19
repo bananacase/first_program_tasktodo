@@ -13,7 +13,7 @@ import warnings
 
 class Day:
     """
-    This class is needed to store data about a specific day. 
+    This class is needed to store data about a specific day.
     Day is a class object. The __init__ method accepts today's as a 'date'
     and the global prefix as a 'source'.
     This class performs the following methods:
@@ -23,7 +23,7 @@ class Day:
     4. Saving the data strusture of the weaving object to the directory
     """
 
-    days_per_month = [0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+    days_in_months = [0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 
     def __init__(self, date: str, source='') -> None:
         '''
@@ -41,21 +41,21 @@ class Day:
         <optional> source='': str: root folder for days. Must match '^/.*/$'
         '''
         self.source = source
-        self.today_do = {0: ['Survive', True]}
-        self.tomorrow_do = {0: ['Survive', True]}
-        self.insite_day = ''
-        self.date = date.split('-')
+        self.today_tasks = {0: ['Survive', True]}
+        self.tomorrow_tasks = {0: ['Survive', True]}
+        self.insite_of_day = ''
+        self.dates = date.split('-')
 
-        for i in self.date[:-1]:
+        for i in self.dates[:-1]:
             source += (i + '/')
             try:
                 os.mkdir(source)
             except FileExistsError:
                 continue
-        source += self.date[-1]
+        source += self.dates[-1]
         self.path = source
 
-        self._check_exist(err=True)  # Maybe it worth to set False..?
+        self._file_conflict(err=True)  # Maybe it worth to set False..?
 
     @staticmethod
     def from_dump(dump_path: str):
@@ -70,62 +70,63 @@ class Day:
         with open(dump_path, 'rb') as f:
             return pickle.load(f)
 
-    def input_today_do(self, text: str) -> None:
+    def create_today_task(self, text: str) -> None:
         '''
-        This method creating to the new one Task in this block with parameter 'text'
+        This method creating to the new one Task in block with parameter 'text'
         This block named: 'Today'
 
         text: str: task description
         '''
-        self.today_do[list(self.today_do.keys())[-1] + 1] = [text, False]
+        key = list(self.today_tasks.keys())[-1] + 1
+        self.today_tasks[key] = [text, False]
 
-    def input_tomorrow_do(self, text: str) -> None:
+    def create_tomorrow_task(self, text: str) -> None:
         '''
         This method creates the new Task in this block with parameter 'text'
         This block named: 'Tomorrow'
 
         text: str: task description
         '''
-        self.tomorrow_do[list(self.tomorrow_do.keys())[-1] + 1] = [text, False]
+        key = list(self.tomorrow_tasks.keys())[-1] + 1
+        self.tomorrow_tasks[key] = [text, False]
 
-    def podsos(self) -> None:
+    def import_previous_day(self) -> None:
         '''
         podsos - it is the best method which changed our life.
         It is perfect, truly. Seriously:
         This method integrates data from one previous object into the current
         '''
-        year_old = int(self.date[0])
-        month_old = int(self.date[1])
-        day_old = int(self.date[2])
+        year_old = int(self.dates[0])
+        month_old = int(self.dates[1])
+        day_old = int(self.dates[2])
 
-        if day_old == 1: 
+        if day_old == 1:
             if month_old == 1:
                 year_old -= 1
                 month_old = 12
                 day_old = 31
             else:
                 month_old -= 1
-                day_old = Day.days_per_month[month_old]
-                if month_old == 2 and year_old%4 == 0:
+                day_old = Day.days_in_months[month_old]
+                if month_old == 2 and year_old % 4 == 0:
                     # Febraury, 1 day longer month
-                    day_old += 1    
+                    day_old += 1
         else:
             day_old -= 1
 
-        old_source = self.source + f'{str(year_old)}/{str(month_old)}/{str(day_old)}'
-
-        print(f"try {old_source}")
+        old_source = self.source
+        old_source += f'{str(year_old)}/{str(month_old)}/{str(day_old)}'
 
         with open(old_source, 'rb') as f:
             data_old = pickle.load(f)
 
-        for i, value in data_old.tomorrow_do.items():
+        for i, value in data_old.tomorrow_tasks.items():
             if i != 0:
-                self.input_today_do(value[0])
+                self.create_today_task(value[0])
 
         del old_source
 
-    def changest(self, id: int) -> None:
+    def apply_task(self, id: int) -> None:
         '''
         This method changes the status of the Task
 
@@ -135,14 +136,14 @@ class Day:
 
     def dump(self) -> None:
         '''
-        This method saves the data strusture of the weaving object to the hard drive
+        This method saves the data strusture of the object to the hard drive
         '''
-        self._check_exist()
+        self._file_conflict()
 
         with open(self.path, 'wb') as f:
             pickle.dump(self, f)
 
-    def _check_exist(self, err=False) -> None:
+    def _file_conflict(self, err=False) -> None:
         '''
         Private method that checks if self.path file already exists
 
@@ -168,10 +169,10 @@ class Day:
 
         return: str
         '''
-        date = '-'.join(self.date)
-        todays = [task[0] for task in self.today_do.values()]
-        tomorrows = [task[0] for task in self.tomorrow_do.values()]
-        insite = self.insite_day
+        date = '-'.join(self.dates)
+        todays = [task[0] for task in self.today_tasks.values()]
+        tomorrows = [task[0] for task in self.tomorrow_tasks.values()]
+        insite = self.insite_of_day
 
         data = f"{date}\nDay Tasks:"
         for t in todays:
